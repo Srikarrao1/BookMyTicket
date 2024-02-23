@@ -1,4 +1,5 @@
 use core::str;
+use std::ops::Add;
 
 use cosmwasm_schema::{cw_serde, schemars, QueryResponses};
 use cosmwasm_std::{Addr, Coin};
@@ -29,6 +30,7 @@ pub enum ExecuteMsg {
         ticket_type: String,
     },
     SetVerifyPkMsg {
+        user_addr: Addr,
         verify_pk_str: String,
     },
     BlockUserMsg {

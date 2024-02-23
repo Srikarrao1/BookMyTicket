@@ -6,20 +6,25 @@ use cosmwasm_std::{
 };
 use cw_storage_plus::{Item, Map};
 
-#[cw_serde]
-pub struct OwnerCap {
-    pub id: u64,
-}
+// #[cw_serde]
+// pub struct OwnerCap {
+//     pub id: u64,
+
+// }
 
 #[cw_serde]
 pub struct TicketNFT {
     pub id: u64,
     pub ticket_type: String,
+    pub owner: Addr,
     pub description: String,
     pub ticket_id: u64,
     pub ticket_claimed: bool,
 }
-
+#[cw_serde]
+pub struct Tickets {
+    pub tickets: Vec<TicketNFT>,
+}
 #[cw_serde]
 pub struct UserTicketInfo {
     pub ticket_owner: Addr,
@@ -50,9 +55,9 @@ pub struct BmtPlatformDetails {
 
 pub const BMT_PLATFORM_DETAILS: Item<BmtPlatformDetails> = Item::new("bmt_platform_info");
 pub const USER_INFO_MAP: Map<Addr, UserTicketInfo> = Map::new("user_ticket_info");
-pub const OWNER_CAP: Item<OwnerCap> = Item::new("owner_cap");
+pub const OWNER: Item<Addr> = Item::new("owner");
 pub const BLOCKED_USERS: Map<Addr, bool> = Map::new("blocked_users");
-pub const TICKET_NFT: Item<TicketNFT> = Item::new("ticket_nft");
+pub const TICKET_NFT: Item<Tickets> = Item::new("ticket_nft");
 
 pub type UserTickets<'a> = Map<'a, Addr, Vec<UserTicketInfo>>;
 pub type TicketTypes<'a> = Map<'a, String, u64>;

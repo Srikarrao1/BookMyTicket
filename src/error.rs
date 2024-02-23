@@ -6,8 +6,8 @@ pub enum ContractError {
     #[error("{0}")]
     Std(#[from] StdError),
 
-    #[error("invalid claimable amount")]
-    InvalidClaimableAmount {},
+    #[error("invalid claimable Ticket")]
+    InvalidClaimableTicket {},
 
     #[error("unauthorized")]
     Unauthorized {},
