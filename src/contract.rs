@@ -13,7 +13,7 @@ use crate::{
     state::{Tickets, UserTicketInfo, BLOCKED_USERS, TICKET_NFT},
 };
 use cosmwasm_std::{
-    attr, coin, entry_point, to_binary, to_json_binary, Addr, BankMsg, BankQuery, Binary, Coin,
+    attr, coin, entry_point, to_json_binary, Addr, BankMsg, BankQuery, Binary, Coin,
     CosmosMsg, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult, Storage, SubMsg,
     Uint128, WasmMsg,
 };
@@ -58,7 +58,7 @@ pub fn execute(
         } => buy_ticket(deps, env, info, ticket_id, amount, ticket_type),
 
         ExecuteMsg::ClaimTicket {
-            ticket_owner,
+            ticket_owner: _,
             ticket_type,
             ticket_id,
         } => claim_ticket(deps, env, info, ticket_id, ticket_type),
@@ -83,23 +83,23 @@ pub fn execute(
     }
 }
 
-fn check_ticket_availability(
-    deps: Deps,
-    ticket_id: u64,
-    ticket_type: &str,
-) -> Result<bool, ContractError> {
-    let ticket_result: Tickets = TICKET_NFT
-        .load(deps.storage)
-        .map_err(|_| ContractError::InvalidClaimableTicket {})?;
+// fn check_ticket_availability(
+//     deps: Deps,
+//     ticket_id: u64,
+//     ticket_type: &str,
+// ) -> Result<bool, ContractError> {
+//     let ticket_result: Tickets = TICKET_NFT
+//         .load(deps.storage)
+//         .map_err(|_| ContractError::InvalidClaimableTicket {})?;
 
-    let ticket_exists = ticket_id == ticket_id && ticket_type == ticket_type;
+//     let ticket_exists = ticket_id == ticket_id && ticket_type == ticket_type;
 
-    if ticket_exists {
-        Ok(true)
-    } else {
-        return Err(ContractError::InvalidClaimableTicket {});
-    }
-}
+//     if ticket_exists {
+//         Ok(true)
+//     } else {
+//         return Err(ContractError::InvalidClaimableTicket {});
+//     }
+// }
 
 fn buy_ticket(
     deps: DepsMut,
@@ -278,6 +278,7 @@ fn unblock_user(
     }
 
     BLOCKED_USERS.remove(deps.storage, user_addr.clone());
+    OWNER.save(deps.storage, &owner)?;
 
     Ok(Response::new()
         .add_attribute("method", "Unblock_user")
@@ -292,6 +293,7 @@ fn change_owner_msg(
     ticket_id: u64,
     ticket_type: String,
 ) -> Result<Response, ContractError> {
+
     let owner = OWNER.load(deps.storage)?;
     if owner != info.sender {
         return Err(ContractError::Unauthorized {});
@@ -323,6 +325,9 @@ fn change_owner_msg(
         msg: to_json_binary(&change_owner_msg)?,
         funds: vec![],
     });
+
+    OWNER.save(deps.storage, &owner)?;
+
     let res = Response::new()
         .add_message(wasm_msg)
         .add_attribute("action", "change_owner")

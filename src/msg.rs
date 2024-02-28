@@ -44,6 +44,7 @@ pub enum ExecuteMsg {
         new_owner: Addr,
         ticket_id: u64,
         ticket_type: String,
+        
     },
 }
 
